@@ -8,12 +8,12 @@ import (
 
 func Start() {
 	e := echo.New()
-	cfg := config.EnvConfig()
+	cfg := config.LoadEnv()
 
 	e.GET("/", func(c *echo.Context) error {
         return c.JSON(200, map[string]string{
 			"message": "Hello, World!,Now start go new project.",
-			"Port":cfg.Port,
+			"Port":cfg.DNS_URL,
 			"details":"This is coaching center management project",
 		})
     })
