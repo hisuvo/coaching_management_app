@@ -1,16 +1,17 @@
 package database
 
 import (
+	"coaching_backend/internal/config"
 	"fmt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func ConnectDB() *gorm.DB{
-	dns := "host=localhost user=postgres password=12345 dbname=coaching_management port=5000 sslmode=disable"
+func ConnectDB(cnfg *config.Config) *gorm.DB{
+	connStr := cnfg.DNS_URL
 
-	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{
 		TranslateError: true,
 	})
 
@@ -19,7 +20,8 @@ func ConnectDB() *gorm.DB{
 		return nil
 	}
 
-	Migrate(db)
+	Migrate(db) // it auto create table in db
 	fmt.Println("Successfully database connected done!")
+	
 	return db
 }

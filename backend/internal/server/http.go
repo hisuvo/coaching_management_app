@@ -2,21 +2,30 @@ package server
 
 import (
 	"coaching_backend/internal/config"
+	"context"
 
 	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
+	"gorm.io/gorm"
 )
 
-func Start() {
+func Start( db *gorm.DB, cnfg *config.Config) {
 	e := echo.New()
-	cfg := config.LoadEnv()
+
+	// Middleware
+	e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
 
 	e.GET("/", func(c *echo.Context) error {
         return c.JSON(200, map[string]string{
 			"message": "Hello, World!,Now start go new project.",
-			"Port":cfg.DNS_URL,
 			"details":"This is coaching center management project",
 		})
     })
 
-	e.Start(":5000")
+
+	sc := echo.StartConfig{Address: ":" + cnfg.PORT}
+	if err := sc.Start(context.Background(), e); err != nil {
+		e.Logger.Error("failed to start server", "error", err)
+	}
 }
