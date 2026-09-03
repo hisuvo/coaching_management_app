@@ -6,13 +6,20 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func ConnectDB(cnfg *config.Config) *gorm.DB{
 	connStr := cnfg.DNS_URL
+	logLavel := logger.Error
+
+	if cnfg.APP_ENV == "development" {
+		logLavel = logger.Info
+	}
 
 	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{
 		TranslateError: true,
+		Logger: logger.Default.LogMode(logLavel), // authoMigrate info show or not show
 	})
 
 	if err != nil {

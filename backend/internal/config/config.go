@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	PORT string
+	APP_ENV string
 	DNS_URL string
 	JWT_SECRECT string
 	JWT_DURATION string
@@ -22,7 +23,7 @@ func mustGetEnv(key string) string {
 	value := os.Getenv(key)
 
 	if value == "" {
-		fmt.Printf("%s is required", key)
+		fmt.Printf("%s is required\n", key)
 	}
 	return value
 }
@@ -35,6 +36,7 @@ func LoadEnv() *Config{
 	
 	return &Config{
 		PORT: mustGetEnv("PORT"),
+		APP_ENV: mustGetEnv("APP_ENV"),
 		DNS_URL: mustGetEnv("DNS_URL"),
 		JWT_SECRECT: mustGetEnv("JWT_SECRECT"),
 		JWT_DURATION: mustGetEnv("JWT_DURATION"),

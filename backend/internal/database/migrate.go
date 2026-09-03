@@ -1,11 +1,13 @@
 package database
 
 import (
-	"fmt"
+	"coaching_backend/internal/domain/users"
 
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) {
-	fmt.Println("Migrate info ->", db)
+	db.AutoMigrate(
+		&users.User{},
+	)
 }
