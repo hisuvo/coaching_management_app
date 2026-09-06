@@ -13,3 +13,9 @@ type UpdateSubjectRequest struct {
 	Description *string `json:"description" validate:"omitempty,max=500"`
 	Status      *string `json:"status" validate:"omitempty,oneof=active inactive"`
 }
+
+type SubjectQuery struct {
+	Class int `query:"class"`
+	Limit int `query:"limit"`
+	Page  int `query:"page"`
+}

@@ -14,4 +14,8 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB) {
 
 	subjects.POST("/subjects", subjectHandler.CreateSubject)
 	subjects.GET("/subjects", subjectHandler.GetAll)
+	subjects.GET("/subjects/:subjectId", subjectHandler.FindById)
+	subjects.GET("/query", subjectHandler.CheckQuery)
+	subjects.PUT("/subjects/:subjectId", subjectHandler.UpdateSubject)
+	subjects.DELETE("/subjects/:subjectId", subjectHandler.DeleteSubject)
 }
