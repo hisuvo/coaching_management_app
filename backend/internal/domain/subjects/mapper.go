@@ -15,11 +15,11 @@ func ToSubjectResponse(subject *Subject) *dto.SubjectResponse{
 	}
 }
 
-func ToSubjectResponses(subjects []Subject)[]*dto.SubjectResponse{
+func ToSubjectResponses(subjects []*Subject)[]*dto.SubjectResponse{
 	responses := make([]*dto.SubjectResponse, 0, len(subjects))
 
 	for i := range subjects {
-		responses = append(responses, ToSubjectResponse(&subjects[i]))
+		responses = append(responses, ToSubjectResponse(subjects[i]))
 	}
 
 	return responses

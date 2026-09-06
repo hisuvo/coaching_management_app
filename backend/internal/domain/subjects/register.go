@@ -6,11 +6,12 @@ import (
 )
 
 func RegisterRoute(e *echo.Echo, db *gorm.DB) {
-	userRepo := NewRepository(db)
-	userService := NewService(userRepo)
-	userHandler := NewHeadler(userService)
+	subjectRepo := NewRepository(db)
+	subjectService := NewService(subjectRepo)
+	subjectHandler := NewHandler(subjectService)
 
-	subjects := e.Group("/api/v1/subjects")
+	subjects := e.Group("/api/v1")
 
-	subjects.POST("/", userHandler.CreateSubject)
+	subjects.POST("/subjects", subjectHandler.CreateSubject)
+	subjects.GET("/subjects", subjectHandler.GetAll)
 }

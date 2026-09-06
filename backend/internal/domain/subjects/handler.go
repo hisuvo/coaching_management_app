@@ -1,55 +1,50 @@
 package subjects
 
 import (
+	"coaching_backend/internal/apperror"
 	"coaching_backend/internal/domain/subjects/dto"
+	"net/http"
 
 	"github.com/labstack/echo/v5"
 )
 
-type header struct {
+type handler struct {
 	service Service
 }
 
-func NewHeadler(service Service) *header {
-	return &header{
+func NewHandler(service Service) *handler {
+	return &handler{
 		service: service,
 	}
 }
 
 // POST /api/v1/subjects
 // Access: Authencated users (amdin, teacher, manager)
-func (h *header) CreateSubject(c *echo.Context) error {
-	var req *dto.CreateSubjectRequest
+func (h *handler) CreateSubject(c *echo.Context) error {
+	var req dto.CreateSubjectRequest
 
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(3000,map[string]any{
-			"success":false,
-			"Message": "Invalid request body",
-			"Errors":  map[string]string{"error": err.Error()},
-		})
+		return err
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return c.JSON(3000,map[string]any{
-			"success":false,
-			"Message": "Validation failed",
-			"Errors":  map[string]string{"error": err.Error()},
-		})
+		return err
 	}
 
-	res, err := h.service.CreateSubject(req)
+	response, err := h.service.CreateSubject(&req)
 
 	if err != nil {
-		return c.JSON(500, map[string]any{
-			"success":false,
-			"Message": "Internal server error",
-			"Errors":  map[string]string{"error": err.Error()},
-		})
+	return err
+}
+	return c.JSON(http.StatusCreated, response)
+}
+
+func (h *handler) GetAll(c *echo.Context) error {
+	res, err := h.service.GetAll()
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest,apperror.NotFound("subjects not found"))
 	}
-	
-	return c.JSON(201, map[string]any{
-		"Success": true,
-		"Message": "Reservation confirmed successfully",
-		"Data":    res,
-	})
+
+	return c.JSON(http.StatusOK, res)
 }

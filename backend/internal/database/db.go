@@ -10,14 +10,16 @@ import (
 )
 
 func ConnectDB(cnfg *config.Config) *gorm.DB{
-	connStr := cnfg.DNS_URL
+	// connStr := cnfg.DNS_URL
 	logLavel := logger.Error
 
 	if cnfg.APP_ENV == "development" {
 		logLavel = logger.Info
 	}
 
-	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{
+	dns := "host=localhost user=postgres password=12345 dbname=coaching_management port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+
+	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{
 		TranslateError: true,
 		Logger: logger.Default.LogMode(logLavel), // authoMigrate info show or not show
 	})
