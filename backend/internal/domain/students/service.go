@@ -20,6 +20,7 @@ func NewService(repository Repository) Service{
 
 func (s *service) Create(req *dto.CreateStudentRequest) (*dto.StudentResponse, error){
 	student := &Student{
+		CoachingID: req.CoachingID,
 		Name: req.Name,
 		Class:req.Class,		
 		Session: req.Session,
