@@ -9,6 +9,8 @@ func toUserResponse(user *User) *dto.UserResponse{
 		Email:     user.Email,
 		Role:      string(user.Role),
 		Status:    string(user.Status),
+		Phone: user.Phone,
+		LastLoginAt: user.LastLoginAt,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}

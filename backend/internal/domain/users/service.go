@@ -1,16 +1,19 @@
 package users
 
 import (
-	"coaching_backend/internal/apperror"
 	"coaching_backend/internal/domain/users/dto"
+	"context"
 	"errors"
+	"strings"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Register(req dto.CreateUserRequest) (*dto.UserResponse, error)
-	FindByEmail(email string)(*dto.UserResponse, error)
+	Register(ctx context.Context, req dto.CreateUserRequest) (*dto.UserResponse, error)
+	FindByEmail(ctx context.Context, email string)(*dto.UserResponse, error)
+	GetByID(ctx context.Context, id uint) (*dto.UserResponse, error)
 }
 
 type service struct {
@@ -24,16 +27,45 @@ func NewService(repository Repository) Service {
 	}
 }
 
-func (s *service) Register(req dto.CreateUserRequest)(*dto.UserResponse, error){
+func (s *service) Register(ctx context.Context, req dto.CreateUserRequest)(*dto.UserResponse, error){
 
-	user := &User{
-		Name: req.Name,
-		Email: req.Email,
-		Password: req.Password,
-		Role: Role(req.Role),
+	// Normalizw input
+	name := strings.TrimSpace(req.Name)
+	email := strings.ToLower(req.Email)
+	phone := strings.TrimSpace(req.Phone)
+
+	// check duplicate email
+	existingUser, err := s.repository.FindByEmail(ctx,email)
+
+	if err != nil && !errors.Is(err,gorm.ErrRecordNotFound) {
+		return nil, err
 	}
 
-	if err := s.repository.Create(user); err != nil {
+	if existingUser != nil {
+		return nil, ErrDuplicateEmail
+	}
+
+	// Hash Password
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.PasswordHash),bcrypt.DefaultCost)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := &User{
+		Name: name,
+		Email: email,
+		PasswordHash: string(passwordHash),
+		Phone: phone,
+		LastLoginAt: nil,
+	}
+
+
+	if err := s.repository.Create(ctx, user); err != nil {
 		return nil, err
 	}
 
@@ -42,12 +74,25 @@ func (s *service) Register(req dto.CreateUserRequest)(*dto.UserResponse, error){
 	return response, nil
 }
 
-func (s *service) FindByEmail(email string) (*dto.UserResponse, error){
-	user, err := s.repository.FindByEmail(email)
+func (s *service) FindByEmail(ctx context.Context, email string) (*dto.UserResponse, error){
+	user, err := s.repository.FindByEmail(ctx, email)
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, apperror.NotFound("User not found")
+		if errors.Is(err, ErrEmailNotFound) {
+			return nil, ErrEmailNotFound
+		}
+		return nil, err
+	}
+
+	return toUserResponse(user), nil
+}
+
+func (s *service) GetByID(ctx context.Context, id uint) (*dto.UserResponse, error){
+	user, err := s.repository.GetByID(ctx, id)
+
+	if err != nil {
+		if errors.Is(err, ErrUserNotRound) {
+			return nil, ErrUserNotRound
 		}
 		return nil, err
 	}

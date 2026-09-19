@@ -1,10 +1,14 @@
 package dto
 
+import "time"
+
 type CreateUserRequest struct {
-	Name     string `json:"name" validate:"required, min=2, max=100"`
-	Email    string `json:"email" validate:"required, email"`
-	Password string `json:"password" validate:"required"`
-	Role     string `json:"role,omitempty"`
+	Name         string     `json:"name" validate:"required, min=2, max=100"`
+	Email        string     `json:"email" validate:"required, email"`
+	PasswordHash string     `json:"password_hash" validate:"required"`
+	Role         string     `json:"role,omitempty"`
+	Phone        string     `json:"phone"`
+	LastLoginAt  *time.Time `json:"last_login_at"`
 }
 
 type UpdateUserRequest struct {

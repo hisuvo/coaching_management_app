@@ -19,7 +19,8 @@ func ToSubjectResponses(subjects []*Subject)[]*dto.SubjectResponse{
 	responses := make([]*dto.SubjectResponse, 0, len(subjects))
 
 	for i := range subjects {
-		responses = append(responses, ToSubjectResponse(subjects[i]))
+		response := ToSubjectResponse(subjects[i])
+		responses = append(responses, response)
 	}
 
 	return responses

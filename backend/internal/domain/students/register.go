@@ -13,6 +13,4 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB) {
 	student := e.Group("/api/v1")
 
 	student.POST("/students", handler.Create)
-
-
 }

@@ -2,9 +2,13 @@ package server
 
 import (
 	"coaching_backend/internal/config"
+	"coaching_backend/internal/domain/assignments"
+	"coaching_backend/internal/domain/auth"
+	"coaching_backend/internal/domain/branches"
 	"coaching_backend/internal/domain/coaching"
 	"coaching_backend/internal/domain/students"
 	"coaching_backend/internal/domain/subjects"
+	"coaching_backend/internal/domain/submissions"
 	"coaching_backend/internal/domain/users"
 	"context"
 
@@ -56,10 +60,14 @@ func Start( db *gorm.DB, cnfg *config.Config) {
     })
 
 	// all route
+	auth.RegisterRoutes(e, db, cnfg)
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(e, db)
 	students.RegisterRoute(e, db)
 	coaching.RegisterRoute(e, db)
+	branches.RegisterRoute(e, db)
+	submissions.RegisterRoute(e, db)
+	assignments.RegisterRoute(e, db)
 
 	sc := echo.StartConfig{Address: ":" + cnfg.PORT}
 	if err := sc.Start(context.Background(), e); err != nil {
