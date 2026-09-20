@@ -19,19 +19,18 @@ func RegisterRoutes(e *echo.Echo, db *gorm.DB, config *config.Config) {
 		7*24*time.Hour,
 	)
 	authService := NewService(userRepo, authRepo, tokenManager)
-	handler := NewHandler(authService, *config)
+	handler := NewHandler(authService, authRepo, *config, *tokenManager)
 
 	auth := e.Group("/api/v1/auth")
 
 	auth.POST("/login", handler.Login)
+	auth.POST("/refresh", handler.Refresh)
+	auth.POST("/logout", handler.Logout)
 
-	// auth.POST(
-	// 	"/refresh",
-	// 	handler.Refresh,
-	// )
+	authGroup := e.Group("/api/v1")
 
-	// auth.POST(
-	// 	"/logout",
-	// 	handler.Logout,
-	// )
+	authGroup.Use(handler.AuthMiddleware)
+
+	authGroup.GET("/profile",handler.profile,)
+
 }

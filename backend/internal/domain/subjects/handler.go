@@ -57,7 +57,7 @@ func (h *handler) GetAll(c *echo.Context) error {
 // Accesss: only authenticate users
 func (h *handler) FindById(c *echo.Context) error {
 	id := c.Param("subjectId")
-
+	
 	res, err := h.service.FindById(id)
 
 	if err != nil {

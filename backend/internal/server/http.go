@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +24,6 @@ type CustomValidator struct {
 
 func (cv *CustomValidator) Validate(i any) error {
   if err := cv.validator.Struct(i); err != nil {
-    // Optionally return the error to let each route control the status code.
     return echo.ErrBadRequest.Wrap(err)
   }
   return nil
@@ -47,8 +47,8 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 	// }
 
 	// Middleware
-	// e.Use(middleware.RequestLogger())
-	// e.Use(middleware.Recover())
+	e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
 
 	e.GET("/", func(c *echo.Context) error {
         return c.JSON(200, map[string]any{
@@ -59,10 +59,28 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 		})
     })
 
+	userRepo := users.NewRepository(db)
+    authRepo := auth.NewRepository(db)
+
+    tokenManager := auth.NewTokenManager(
+        cnfg.JWT_ACCESS_SECRET,
+        "coaching-management-api",
+        cnfg.JWT_ACCESS_EXPIRES_IN,
+        cnfg.JWT_REFRESH_EXPIRES_IN,
+    )
+
+    authService := auth.NewService(userRepo, authRepo, tokenManager)
+    authHandler := auth.NewHandler(authService, authRepo, *cnfg, *tokenManager)
+
+	authMiddleware := authHandler.AuthMiddleware;
+
+
+	api := e.Group("/api/v1")
+
 	// all route
 	auth.RegisterRoutes(e, db, cnfg)
 	users.RegisterRoute(e, db)
-	subjects.RegisterRoute(e, db)
+	subjects.RegisterRoute(api, db, authMiddleware)
 	students.RegisterRoute(e, db)
 	coaching.RegisterRoute(e, db)
 	branches.RegisterRoute(e, db)

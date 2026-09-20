@@ -12,7 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// type Handler interface{}
 
 type Handler struct {
 	service Service

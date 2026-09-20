@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	CreateSession(ctx context.Context, session *AuthSession) error
 	GetSessionByTokenHash(ctx context.Context, tokenHash string) (*AuthSession, error)
+	GetSessionByID(ctx context.Context, sessionID uint) (*AuthSession, error)
 	RevokeSession(ctx context.Context, sessionId uint) error
 	RevokeAllUserSession(ctx context.Context, userId uint) error
 	UpdateRefreshToken(ctx context.Context, sessionID uint, tokenHash string, expiresAt time.Time) error
@@ -48,9 +49,23 @@ func (r *repository) GetSessionByTokenHash(ctx context.Context, tokenHash string
 	return &session, nil
 }
 
+func (r *repository) GetSessionByID(ctx context.Context, sessionID uint) (*AuthSession, error) {
+	var session AuthSession
+
+	err := r.db.WithContext(ctx).Where("id = ?", sessionID).First(&session).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, gorm.ErrRecordNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}
+
 func (r *repository) RevokeSession(ctx context.Context, sessionId uint) error {
 	now := time.Now()
-	return r.db.WithContext(ctx).Model(&AuthSession{}).Where("session_id = ?", sessionId).Update("revoke_at", now).Error
+	return r.db.WithContext(ctx).Model(&AuthSession{}).Where("id = ?", sessionId).Update("revoked_at", now).Error
 }
 
 func (r *repository) RevokeAllUserSession(ctx context.Context, userId uint) error {

@@ -104,7 +104,7 @@ func (s *service) Login(ctx context.Context, req *dto.LoginRequest,userAgent str
 	}, nil
 }
 
-func (s *service) Refresh( ctx context.Context, refreshToken string, userAgent string, ipAddress string,) (*dto.RefreshResult, error) {
+func (s *service) Refresh( ctx context.Context, refreshToken string, userAgent string, ipAddress string) (*dto.RefreshResult, error) {
 
 	if refreshToken == "" {
 		return nil, errors.New("refresh token is required")
