@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"coaching_backend/internal/apperror"
 	"coaching_backend/internal/httpresponse"
 	"net/http"
 	"strings"
@@ -65,33 +64,76 @@ func GetUserRole(c *echo.Context) (string, bool) {
 	return role, ok
 }
 
-func RequireRoles(roles ...string) echo.MiddlewareFunc {
+// func RequireRoles(roles ...string) echo.MiddlewareFunc {
 
-	allowed := make(map[string]struct{})
+// 	allowed := make(map[string]struct{})
 
-	for _, role := range roles {
-		allowed[role] = struct{}{}
-	}
+// 	for _, role := range roles {
+// 		allowed[role] = struct{}{}
+// 	}
 
+// 	return func(next echo.HandlerFunc) echo.HandlerFunc {
+
+// 		return func(c *echo.Context) error {
+
+// 			role, ok := GetUserRole(c)
+
+// 			if !ok {
+// 				return apperror.Unauthorized(
+// 					"authentication required",
+// 				)
+// 			}
+
+// 			if _, exists := allowed[role]; !exists {
+// 				return apperror.Forbidden(
+// 					"you do not have permission",
+// 				)
+// 			}
+
+// 			return next(c)
+// 		}
+// 	}
+// }
+
+// func RequireRoles(allowedRoles ...string) echo.MiddlewareFunc {
+// 	return func(next echo.HandlerFunc) echo.HandlerFunc {
+// 		return func(c *echo.Context) error {
+// 			role := c.Get(ContextRole)
+// 			fmt.Println("usre role ->", role)
+// 			if role == nil {
+// 				return apperror.Unauthorized("authentication required")
+// 			}
+// 			userRole := role.(string)
+// 			for _, allowedRole := range allowedRoles {
+// 				if userRole == allowedRole {
+// 					return next(c)
+// 				}
+// 			}
+// 			return apperror.Forbidden("you do not have permission")
+// 		}
+// 	}
+// }
+
+func RequireRoles(allowedRoles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-
 		return func(c *echo.Context) error {
-
-			role, ok := GetUserRole(c)
-
-			if !ok {
-				return apperror.Unauthorized(
-					"authentication required",
-				)
+			roleValue := c.Get(ContextRole)
+			if roleValue == nil {
+				return httpresponse.Error(c, http.StatusUnauthorized, "authentication required", nil)
 			}
 
-			if _, exists := allowed[role]; !exists {
-				return apperror.Forbidden(
-					"you do not have permission",
-				)
+			userRole, ok := roleValue.(string)
+			if !ok || userRole == "" {
+				return httpresponse.Error(c, http.StatusUnauthorized, "invalid role in token", nil)
 			}
 
-			return next(c)
+			for _, allowedRole := range allowedRoles {
+				if userRole == allowedRole {
+					return next(c)
+				}
+			}
+
+			return httpresponse.Error(c, http.StatusForbidden, "you do not have permission", nil)
 		}
 	}
 }

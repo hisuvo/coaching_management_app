@@ -39,16 +39,21 @@ func (s *service) Login(ctx context.Context, req *dto.LoginRequest,userAgent str
 
 	user, err := s.userRepository.FindByEmail(ctx,email)
 
+
 	if err != nil {
 		return nil, errors.New("invalid email or password")
+	}
+
+	if user.Status == "" {
+		user.Status = users.StatusActive
 	}
 
 	if user.Status != users.StatusActive {
 		return nil, errors.New("user account is not active")
 	}
 
-	if err := ComparePassword(user.PasswordHash,req.Password); err != nil {
-		return nil, errors.New("invalid email or password")
+	if err := ComparePassword(user.PasswordHash, req.Password); err != nil {
+		return nil, errors.New("Password does NOT match")
 	}
 
 	refreshToken, err := GenerateRefreshToken()

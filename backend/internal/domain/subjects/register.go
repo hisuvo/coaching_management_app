@@ -15,13 +15,13 @@ func RegisterRoute(api *echo.Group, db *gorm.DB, authMiddleware echo.MiddlewareF
 	subjects := api.Group("/subject")
 	subjects.Use(authMiddleware)
 
-	
+
 	subjects.POST("", subjectHandler.CreateSubject)
 	subjects.GET("", subjectHandler.GetAll)
 
-	member := subjects.Group("")
-	member.Use(auth.RequireRoles("MEMBER","STUDENT"))
-	member.GET("/:subjectId", subjectHandler.FindById)
+	// member := subjects.Group("")
+	// member.Use(auth.RequireRoles("MEMBER","STUDENT"))
+	subjects.GET("/:subjectId", subjectHandler.FindById, auth.RequireRoles("STUDENT"))
 	
 	subjects.GET("/query", subjectHandler.CheckQuery)
 	subjects.PUT("/:subjectId", subjectHandler.UpdateSubject)

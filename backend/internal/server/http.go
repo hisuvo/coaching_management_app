@@ -36,15 +36,6 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 	e.Validator = &CustomValidator{
 		validator: validator.New(),
 	}
-	
-	// e.HTTPErrorHandler = func(c *echo.Context, err error) {
-	// 	var appErr *apperror.AppError
-	// 	if errors.As(err, &appErr) {
-	// 		_ = httpresponse.Error(c, appErr.Status, appErr.Message, appErr.Code)
-	// 		return
-	// 	}
-	// 	echo.DefaultHTTPErrorHandler(false)(c, err)
-	// }
 
 	// Middleware
 	e.Use(middleware.RequestLogger())
@@ -82,7 +73,7 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(api, db, authMiddleware)
 	students.RegisterRoute(e, db)
-	coaching.RegisterRoute(e, db)
+	coaching.RegisterRoute(e, db, authMiddleware)
 	branches.RegisterRoute(e, db)
 	submissions.RegisterRoute(e, db)
 	assignments.RegisterRoute(e, db)

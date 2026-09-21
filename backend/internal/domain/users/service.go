@@ -46,22 +46,20 @@ func (s *service) Register(ctx context.Context, req dto.CreateUserRequest)(*dto.
 	}
 
 	// Hash Password
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.PasswordHash),bcrypt.DefaultCost)
-
-	if err != nil {
-		return nil, err
-	}
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		return nil, err
 	}
 
 	user := &User{
-		Name: name,
-		Email: email,
+		Name:         name,
+		Email:        email,
 		PasswordHash: string(passwordHash),
-		Phone: phone,
-		LastLoginAt: nil,
+		Role:         RoleMember,
+		Status:       StatusActive,
+		Phone:        phone,
+		LastLoginAt:  nil,
 	}
 
 
