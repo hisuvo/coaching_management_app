@@ -9,6 +9,11 @@ func ToCoachingResponse(coaching *Coaching) *dto.CoachingResponse{
 		Email: coaching.Email,
 		Phone: coaching.Phone,
 		Domain: coaching.Domain,
+		Slug: coaching.Slug,
+		LogoURL: coaching.LogoURL,
+		Address: coaching.Address,
+		TimeZone: coaching.TimeZone,
+		Status: string(coaching.Status),
 		CreatedAt: coaching.CreatedAt,
 		UpdatedAt: coaching.UpdatedAt,
 	}
