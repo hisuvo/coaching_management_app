@@ -29,8 +29,16 @@ func ConnectDB(cnfg *config.Config) *gorm.DB{
 		return nil
 	}
 
-	Migrate(db) // it auto create table in db
+	// Migrate auto create table in database
+	Migrate(db) 
+
+	// Super Admin seed function call here
+	if err := Seed(db, cnfg); err == nil {
+		fmt.Println("Super Admin seed completed successfully")
+	}else{
+		fmt.Println("Super Admin seed failed")
+	}
+
 	fmt.Println("Successfully database connected done!")
-	
 	return db
 }

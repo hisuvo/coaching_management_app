@@ -1,19 +1,20 @@
 package dto
 
-import "time"
-
 type CreateUserRequest struct {
-	Name         string     `json:"name" validate:"required, min=2, max=100"`
-	Email        string     `json:"email" validate:"required, email"`
-	Password string     `json:"password" validate:"required"`
-	Role         string     `json:"role,omitempty"`
-	Phone        string     `json:"phone"`
-	LastLoginAt  *time.Time `json:"last_login_at"`
+	Name       string `json:"name" validate:"required,min=2,max=100"`
+	Email      string `json:"email" validate:"required,email,max=255"`
+	Phone      string `json:"phone" validate:"omitempty,max=20"`
+	Password   string `json:"password" validate:"required,min=8,max=72"`
+	CoachingID *uint  `json:"coaching_id" validate:"omitempty"`
 }
 
 type UpdateUserRequest struct {
-	Name   string `json:"name,omitempty" validate:"omitempty, min=2, max=100"`
-	Email  string `json:"email,omitempty" validate:"omitempty, email"`
-	Role   string `json:"role,omitempty"`
-	Status string `json:"status,omitempty"`
+	Name   *string `json:"name" validate:"omitempty,min=2,max=100"`
+	Phone  *string `json:"phone" validate:"omitempty,max=20"`
+	Status *string `json:"status" validate:"omitempty,oneof=ACTIVE INACTIVE SUSPENDED"`
+}
+
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8,max=72"`
 }

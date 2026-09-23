@@ -28,3 +28,29 @@ func ToCoachingResponses(coachings []*Coaching) []*dto.CoachingResponse {
 
 	return responses
 }
+
+func ApplyCoachingUpdate(entity *Coaching, req *dto.UpdateCoachingRequest) {
+	if req.Name != nil {
+		entity.Name = *req.Name
+	}
+	
+	if req.Email != nil {
+		entity.Email = *req.Email
+	}
+
+	if req.Phone != nil {
+		entity.Phone = *req.Phone
+	}
+
+	if req.LogoURL != nil {
+		entity.LogoURL = *req.LogoURL
+	}
+
+	if req.Status != nil {
+		entity.Status = CoachingStatus(*req.Status)
+	}
+
+	if req.TimeZone != nil {
+		entity.TimeZone = *req.TimeZone
+	}
+}

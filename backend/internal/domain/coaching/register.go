@@ -12,13 +12,14 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB, authMiddleware echo.MiddlewareFunc
 	coachingService := NewService(coachingRepo)
 	coachingHandler := NewHandler(coachingService)
 
-	route := e.Group("/api/v1", authMiddleware)
+	route := e.Group("/api/v1")
+	route.GET("/coachings", coachingHandler.GetAll)
+	route.GET("/coachings/:id",coachingHandler.GetById)
+	route.PUT("/coachings/:id",coachingHandler.Update)
 
 	admin := route.Group("")
-	admin.Use((auth.RequireRoles("ADMIN")))
-	admin.GET("/coachings/:id",coachingHandler.GetById)
-
-	memeber := route.Group("/m",auth.RequireRoles("MEMBER"))
-	memeber.POST("/coachings", coachingHandler.Create)
-	memeber.GET("/coachings", coachingHandler.GetAll)
+	admin.Use(authMiddleware)
+	admin.Use((auth.RequireRoles("ADMIN","SUPER_ADMIN")))
+	admin.POST("/coachings", coachingHandler.Create)
+	
 }

@@ -26,8 +26,10 @@ type Config struct {
 	COOKIE_NAME string
 	COOKIE_SECURE bool
 
+	SUPER_ADMIN_NAME string
 	SUPER_ADMIN_EMAIL string
 	SUPER_ADMIN_PASSWORD string
+	SUPER_ADMIN_PHONE string
 	ADMIN_EMAIL string
 	ADMIN_PASSWORD string
 }
@@ -135,8 +137,10 @@ func LoadEnv() (*Config, error){
 		COOKIE_NAME: mustGetEnv("COOKIE_NAME"),
 		COOKIE_SECURE: secure,
 
+		SUPER_ADMIN_NAME: mustGetEnv("SUPER_ADMIN_NAME"),
 		SUPER_ADMIN_EMAIL: mustGetEnv("SUPER_ADMIN_EMAIL"),
 		SUPER_ADMIN_PASSWORD: mustGetEnv("SUPER_ADMIN_PASSWORD"),
+		SUPER_ADMIN_PHONE: mustGetEnv("SUPER_ADMIN_PHONE"),
 		ADMIN_EMAIL: mustGetEnv("ADMIN_EMAIL"),
 		ADMIN_PASSWORD: mustGetEnv("ADMIN_PASSWORD"),
 	}, nil
