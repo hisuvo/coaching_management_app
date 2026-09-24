@@ -14,6 +14,7 @@ type Service interface {
 	GetById(ctx context.Context,id uint) (*dto.CoachingResponse, error)
 	GetAll(ctx context.Context) ([]*dto.CoachingResponse, error)
 	Update(ctx context.Context, id uint, req *dto.UpdateCoachingRequest) (*dto.CoachingResponse, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type service struct {
@@ -115,4 +116,12 @@ func (s *service)  Update(ctx context.Context, id uint, req *dto.UpdateCoachingR
 	response := ToCoachingResponse(updated)
 
 	return response,nil
+}
+
+func (s *service) Delete(ctx context.Context, id uint) error {
+	if err := s.repository.Delete(ctx, id); err != nil {
+		return err
+	}
+
+	return nil
 }

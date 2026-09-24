@@ -107,3 +107,21 @@ func (h *handler) Update(c *echo.Context) error {
 
 	return httpresponse.Error(c,http.StatusOK,"Coaching updated successfully",response)
 }
+
+// DELETE api/v1/coachings
+// Access: Only Super-Admin can delete
+func (h *handler) Delete(c *echo.Context) error {
+	coachingId := (*c).Param("id")
+
+	id, err := strconv.ParseInt(coachingId, 10, 64)
+
+	if err != nil {
+		return httpresponse.Error(c,http.StatusBadRequest,"Invalied coaching id", err.Error())
+	}
+
+	if err := h.service.Delete(c.Request().Context(), uint(id)); err != nil {
+		return httpresponse.Error(c,http.StatusBadRequest,"Coaching delete failed", err.Error())
+	}
+
+	return httpresponse.Error(c,http.StatusOK,"Coaching delete successfully", nil)
+}

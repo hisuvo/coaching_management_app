@@ -15,11 +15,17 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB, authMiddleware echo.MiddlewareFunc
 	route := e.Group("/api/v1")
 	route.GET("/coachings", coachingHandler.GetAll)
 	route.GET("/coachings/:id",coachingHandler.GetById)
-	route.PUT("/coachings/:id",coachingHandler.Update)
-
-	admin := route.Group("")
-	admin.Use(authMiddleware)
-	admin.Use((auth.RequireRoles("ADMIN","SUPER_ADMIN")))
-	admin.POST("/coachings", coachingHandler.Create)
 	
+	protectedRoute := route.Group("", authMiddleware)
+	protectedRoute.POST("/coachings", coachingHandler.Create, auth.RequireRoles("SUPER_ADMIN"))
+	protectedRoute.DELETE("/coachings/:id",coachingHandler.Delete, auth.RequireRoles("SUPER_ADMIN"))
+	protectedRoute.PUT("/coachings/:id",coachingHandler.Update, auth.RequireRoles("ADMIN"))
+
+	// ------ NOTE ------
+	// protected := route.Group("")
+	// protected.Use(authMiddleware)
+	// protected.Use((auth.RequireRoles("ADMIN","SUPER_ADMIN")))
+	// protected.POST("/coachings", coachingHandler.Create)
+	// protected.DELETE("/coachings/:id",coachingHandler.Delete)
+	// protected.PUT("/coachings/:id",coachingHandler.Update)
 }

@@ -13,14 +13,13 @@ var (
 )
 
 
-
 type Repository interface {
 	Create(ctx context.Context, coaching *Coaching) error
 	FindByEmail(ctx context.Context, email string) (*Coaching, error)
 	GetById(ctx context.Context, id uint) (*Coaching, error)
 	GetAll(ctx context.Context, ) ([]*Coaching, error)
 	Update(ctx context.Context, id uint, coaching *Coaching) (*Coaching, error)
-	Delete(ctx context.Context, id uint) (*Coaching, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type repository struct {
@@ -108,6 +107,17 @@ func (r *repository) Update(ctx context.Context, id uint, coaching *Coaching) (*
 	return &existing, nil
 }
 
-func (r *repository) Delete(ctx context.Context,id uint) (*Coaching, error){
-	return nil,nil
+func (r *repository) Delete(ctx context.Context,id uint) error{
+	var coaching Coaching
+
+	// Find this caochin is exists
+	if err := r.db.WithContext(ctx).First(&coaching, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			return ErrCoachingNotFound
+		}
+
+		return err
+	}
+
+	return r.db.WithContext(ctx).Delete(&coaching).Error
 }
