@@ -70,11 +70,11 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 
 	// all route
 	auth.RegisterRoutes(e, db, cnfg)
+	coaching.RegisterRoute(e, db, authMiddleware)
+	branches.RegisterRoute(api, db, authMiddleware)
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(api, db, authMiddleware)
 	students.RegisterRoute(e, db)
-	coaching.RegisterRoute(e, db, authMiddleware)
-	branches.RegisterRoute(e, db)
 	submissions.RegisterRoute(e, db)
 	assignments.RegisterRoute(e, db)
 

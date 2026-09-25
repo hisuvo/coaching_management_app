@@ -4,6 +4,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type BranchStatus string
+
+const (
+	BranchStatusActive   BranchStatus = "ACTIVE"
+	BranchStatusInactive BranchStatus = "INACTIVE"
+)
+
 type Branch struct {
 	gorm.Model
 
@@ -16,6 +23,5 @@ type Branch struct {
 	Address string `json:"address" gorm:"type:text"`
 	City string `json:"city" gorm:"type:varchar(100)"`
 	Country string `json:"country" gorm:"type:varchar(100);default:'Bangladesh'"`
-	Status string `json:"status" gorm:"type:varchar(20);default:'active';index"`
-
+	Status BranchStatus `json:"status" gorm:"type:varchar(20);default:'ACTIVE';index"`
 }

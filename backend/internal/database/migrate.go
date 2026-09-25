@@ -3,6 +3,7 @@ package database
 import (
 	"coaching_backend/internal/domain/assignments"
 	"coaching_backend/internal/domain/auth"
+	"coaching_backend/internal/domain/branches"
 	"coaching_backend/internal/domain/coaching"
 	"coaching_backend/internal/domain/students"
 	"coaching_backend/internal/domain/subjects"
@@ -14,11 +15,12 @@ import (
 
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(
-		&auth.AuthSession{},
 		&users.User{},
+		&auth.AuthSession{},
+		&coaching.Coaching{},
+		&branches.Branch{},
 		&subjects.Subject{},
 		&students.Student{},
-		&coaching.Coaching{},
 		&submissions.Submission{},
 		&assignments.Assignment{},
 	)

@@ -7,12 +7,38 @@ import (
 	"gorm.io/gorm"
 )
 
-func RegisterRoute(e *echo.Echo, db *gorm.DB) {
+func RegisterRoute(api *echo.Group, db *gorm.DB, authMiddleware echo.MiddlewareFunc) {
 
-	route := e.Group("/api/v1")
+	branchRepo := NewRepository(db)
+	branchService := NewService(branchRepo)
+	branchHandler := NewHandler(branchService)
 
-	route.GET("/branches", func(c *echo.Context) error {
+	api.POST("/branches", branchHandler.CreateBranch, authMiddleware)
+
+	api.GET("/branches", func(c *echo.Context) error {
 		fmt.Println("Hello world form branch")
-		return nil
-	} )
+		return c.JSON(200, map[string]any{
+			"success": true,
+			"message": "Branch fetched successfully",
+			"details": "This is branch API",
+		})
+	})
+
+	api.PUT("/branches/:id", func(c *echo.Context) error {
+		fmt.Println("Hello world form branch")
+		return c.JSON(200, map[string]any{
+			"success": true,
+			"message": "Branch updated successfully",
+			"details": "This is branch API",
+		})
+	})
+
+	api.DELETE("/branches/:id", func(c *echo.Context) error {
+		fmt.Println("Hello world form branch")
+		return c.JSON(200, map[string]any{
+			"success": true,
+			"message": "Branch deleted successfully",
+			"details": "This is branch API",
+		})
+	})
 }

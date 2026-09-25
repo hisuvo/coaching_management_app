@@ -13,7 +13,7 @@ func ToBranchResponse(branch *Branch) *dto.BranchResponse {
 		Address:    branch.Address,
 		City:       branch.City,
 		Country:    branch.Country,
-		Status:     branch.Status,
+		Status:     string(branch.Status),
 		CreatedAt:  branch.CreatedAt,
 		UpdatedAt:  branch.UpdatedAt,
 	}
