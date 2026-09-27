@@ -11,8 +11,6 @@ func ToBranchResponse(branch *Branch) *dto.BranchResponse {
 		Phone:      branch.Phone,
 		Email:      branch.Email,
 		Address:    branch.Address,
-		City:       branch.City,
-		Country:    branch.Country,
 		Status:     string(branch.Status),
 		CreatedAt:  branch.CreatedAt,
 		UpdatedAt:  branch.UpdatedAt,
@@ -20,12 +18,37 @@ func ToBranchResponse(branch *Branch) *dto.BranchResponse {
 }
 
 func ToBranchResponses(branches []*Branch) []*dto.BranchResponse {
+	responses := make([]*dto.BranchResponse, 0, len(branches))
 
-	response := make([]*dto.BranchResponse, 0, len(branches))
-
-	for i := range branches{
-		return append(response, ToBranchResponse(branches[i]))
+	for _, branch := range branches {
+		responses = append(responses, ToBranchResponse(branch))
 	}
 
-	return response
+	return responses
+}
+
+func ApplyBranchUpdate(entity *Branch, req *dto.UpdateBranchRequest) {
+	if req.Name != nil {
+		entity.Name = *req.Name
+	}
+
+	if req.Code != nil {
+		entity.Code = *req.Code
+	}
+
+	if req.Email != nil {
+		entity.Email = *req.Email
+	}
+
+	if req.Address != nil {
+		entity.Address = *req.Address
+	}
+
+	if req.Phone != nil {
+		entity.Phone = *req.Phone
+	}
+
+	if req.Status != nil {
+		entity.Status = BranchStatus(*req.Status)
+	}
 }

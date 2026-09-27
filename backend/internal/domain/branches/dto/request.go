@@ -7,8 +7,6 @@ type CreateBranchRequest struct {
 	Phone      string `json:"phone" validate:"omitempty,max=20"`
 	Email      string `json:"email" validate:"omitempty,email,max=150"`
 	Address    string `json:"address" validate:"omitempty,max=500"`
-	City       string `json:"city" validate:"omitempty,max=100"`
-	Country    string `json:"country" validate:"omitempty,max=100"`
 	Status     string `json:"status" validate:"omitempty,oneof=ACTIVE INACTIVE"`
 }
 
@@ -18,7 +16,5 @@ type UpdateBranchRequest struct {
 	Phone   *string `json:"phone" validate:"omitempty,max=20"`
 	Email   *string `json:"email" validate:"omitempty,email,max=150"`
 	Address *string `json:"address" validate:"omitempty,max=500"`
-	City    *string `json:"city" validate:"omitempty,max=100"`
-	Country *string `json:"country" validate:"omitempty,max=100"`
 	Status  *string `json:"status" validate:"omitempty,oneof=ACTIVE INACTIVE"`
 }

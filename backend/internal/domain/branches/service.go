@@ -4,6 +4,9 @@ import (
 	"coaching_backend/internal/domain/branches/dto"
 	"context"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Service interface {
@@ -34,13 +37,12 @@ func (s *service) Create(ctx context.Context, req *dto.CreateBranchRequest) (*dt
 	}
 	
 	email := strings.ToLower(strings.TrimSpace(req.Email))
-	name := strings.ToUpper(req.Name)
+	name := cases.Title(language.English).String(strings.ToLower(strings.TrimSpace(req.Name)))
 	status := strings.ToUpper(req.Status)
 	code := strings.ToUpper(req.Code)
-	country := strings.ToUpper(req.Country)
 	phone := req.Phone
 	address := req.Address
-	city := req.City
+
 	
 	branch = &Branch{
 		CoachingID: req.CoachingID,
@@ -49,8 +51,6 @@ func (s *service) Create(ctx context.Context, req *dto.CreateBranchRequest) (*dt
 		Phone:      phone,
 		Email:      email,
 		Address:    address,
-		City:       city,
-		Country: country,
 		Status:  BranchStatus(status),
 	}
 
@@ -79,35 +79,7 @@ func (s *service) Update(ctx context.Context, id uint, req *dto.UpdateBranchRequ
 		return nil, err
 	}
 
-	if req.Name != nil {
-		branch.Name = *req.Name
-	}
-
-	if req.Code != nil {
-		branch.Code = *req.Code
-	}
-
-	if req.Phone != nil {
-		branch.Phone = *req.Phone
-	}
-
-	if req.Email != nil {
-		branch.Email = *req.Email
-	}
-
-	if req.Address != nil {
-		branch.Address = *req.Address
-	}
-
-	if req.City != nil {
-		branch.City = *req.City
-	}
-	if req.Country != nil {
-		branch.Country = *req.Country
-	}
-	if req.Status != nil {
-		branch.Status = BranchStatus(*req.Status)
-	}
+	ApplyBranchUpdate(branch, req)
 
 	branch, err = s.repository.Update(ctx, id, branch)
 	if err != nil {
@@ -118,9 +90,11 @@ func (s *service) Update(ctx context.Context, id uint, req *dto.UpdateBranchRequ
 
 func (s *service) Delete(ctx context.Context, id uint) (*dto.BranchResponse, error) {
 	branch, err := s.repository.Delete(ctx, id)
+
 	if err != nil {
 		return nil, err
 	}
+	
 	return ToBranchResponse(branch), nil
 }
 
