@@ -2,7 +2,6 @@ package dto
 
 import (
 	"coaching_backend/internal/domain/teachers/dto"
-	"time"
 )
 
 type CoachingResponse struct {
@@ -16,8 +15,14 @@ type CoachingResponse struct {
 	Address   string         `json:"address,omitempty"`
 	TimeZone  string         `json:"time_zone"`
 	Status    string         `json:"status"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	Admin   AdminResponse `json:"admin"`
+}
+
+type AdminResponse struct {
+	ID    uint   `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
 }
 
 type CoachingWithTeachersResponse struct {

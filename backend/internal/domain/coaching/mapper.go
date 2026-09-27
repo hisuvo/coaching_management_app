@@ -1,8 +1,11 @@
 package coaching
 
-import "coaching_backend/internal/domain/coaching/dto"
+import (
+	"coaching_backend/internal/domain/coaching/dto"
+	"coaching_backend/internal/domain/users"
+)
 
-func ToCoachingResponse(coaching *Coaching) *dto.CoachingResponse{
+func ToCoachingResponse(coaching *Coaching, admin *users.User) *dto.CoachingResponse{
 	return &dto.CoachingResponse{
 		ID: coaching.ID,
 		Name: coaching.Name,
@@ -14,16 +17,21 @@ func ToCoachingResponse(coaching *Coaching) *dto.CoachingResponse{
 		Address: coaching.Address,
 		TimeZone: coaching.TimeZone,
 		Status: string(coaching.Status),
-		CreatedAt: coaching.CreatedAt,
-		UpdatedAt: coaching.UpdatedAt,
+		Admin: dto.AdminResponse{
+			ID:    admin.ID,
+			Name:  admin.Name,
+			Email: admin.Email,
+			Role:  string(admin.Role),
+		},
 	}
 }
 
-func ToCoachingResponses(coachings []*Coaching) []*dto.CoachingResponse {
+func ToCoachingResponses(coachings []*Coaching, admins map[uint]*users.User,) []*dto.CoachingResponse {
 	responses := make([]*dto.CoachingResponse,0,len(coachings))
 
-	for i := range coachings{
-		responses = append(responses, ToCoachingResponse(coachings[i]))
+	for _, coaching := range coachings{
+		admin := admins[coaching.ID]
+		responses = append(responses, ToCoachingResponse(coaching, admin))
 	}
 
 	return responses

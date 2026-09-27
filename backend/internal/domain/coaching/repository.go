@@ -1,6 +1,7 @@
 package coaching
 
 import (
+	"coaching_backend/internal/domain/users"
 	"context"
 	"errors"
 
@@ -14,7 +15,7 @@ var (
 
 
 type Repository interface {
-	Create(ctx context.Context, coaching *Coaching) error
+	Create(ctx context.Context, coaching *Coaching, admin *users.User) error
 	FindByEmail(ctx context.Context, email string) (*Coaching, error)
 	GetById(ctx context.Context, id uint) (*Coaching, error)
 	GetAll(ctx context.Context, ) ([]*Coaching, error)
@@ -32,11 +33,23 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context,coaching *Coaching) error {
-	return r.db.Create(coaching).Error
+func (r *repository) Create(ctx context.Context,coaching *Coaching, admin *users.User) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Create(&coaching).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Create(&admin).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	
 }
 
-func (r *repository) FindByEmail(ctx context.Context,email string) (*Coaching, error) {
+func (r *repository) FindByEmail(ctx context.Context, email string) (*Coaching, error) {
 	var coaching Coaching
 
 	if err := r.db.Where("email = ?", email).First(&coaching).Error; err != nil {

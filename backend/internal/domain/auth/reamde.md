@@ -196,7 +196,7 @@ type User struct {
 
 	Email string `gorm:"type:varchar(150);uniqueIndex;not null"`
 
-	PasswordHash string `gorm:"type:varchar(255);not null"`
+	Password string `gorm:"type:varchar(255);not null"`
 
 	Role UserRole `gorm:"type:varchar(30);not null;index"`
 
@@ -212,7 +212,7 @@ type User struct {
 }
 ```
 
-### কেন `PasswordHash`?
+### কেন `Password`?
 
 Database-এ কখনো:
 
@@ -1052,7 +1052,7 @@ func (s *service) Login(
 	}
 
 	if err := ComparePassword(
-		user.PasswordHash,
+		user.Password,
 		req.Password,
 	); err != nil {
 		return nil, errors.New("invalid email or password")

@@ -2,8 +2,8 @@ package database
 
 import (
 	"coaching_backend/internal/config"
-	"coaching_backend/internal/domain/auth"
 	"coaching_backend/internal/domain/users"
+	"coaching_backend/internal/pkg/security"
 
 	"gorm.io/gorm"
 )
@@ -18,18 +18,18 @@ func Seed(db *gorm.DB, cnfg *config.Config) error {
 	}
 
 	// hash passwrd generate
-	hashPassword, err := auth.HashPassword(cnfg.SUPER_ADMIN_PASSWORD)
+	hashPassword, err := security.HashPassword(cnfg.PLATFORM_ADMIN_PASSWORD)
 
 	if err != nil {
 		return err
 	}
 
 	suerAdmin := users.User{
-		Name: cnfg.SUPER_ADMIN_NAME,
-		Email: cnfg.SUPER_ADMIN_EMAIL,
-		PasswordHash: hashPassword,
-		Role: "SUPER_ADMIN",
-		Phone: cnfg.SUPER_ADMIN_PHONE,
+		Name: cnfg.PLATFORM_ADMIN_NAME,
+		Email: cnfg.PLATFORM_ADMIN_EMAIL,
+		Password: hashPassword,
+		Role: "PLATFORM_ADMIN",
+		Phone: cnfg.PLATFORM_ADMIN_PHONE,
 	}
 
 	return db.Create(&suerAdmin).Error

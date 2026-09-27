@@ -33,6 +33,10 @@ func (h *Handler) Register(c *echo.Context) error {
 			},)
 	}
 
+	if err := c.Validate(&req); err != nil {
+		return httpresponse.Error(c, http.StatusBadRequest,"resigtation validation error", err.Error())
+	}
+
 	user, err := h.service.Register(c.Request().Context(),req)
 
 

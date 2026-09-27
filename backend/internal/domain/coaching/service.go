@@ -2,6 +2,8 @@ package coaching
 
 import (
 	"coaching_backend/internal/domain/coaching/dto"
+	"coaching_backend/internal/domain/users"
+	"coaching_backend/internal/pkg/security"
 	"context"
 	"errors"
 	"fmt"
@@ -59,15 +61,26 @@ func (s *service) Create(ctx context.Context,req *dto.CreateCoachingRequest) (*d
 		TimeZone: req.TimeZone,
 	}
 
-	fmt.Print()
+	hashPassword, err := security.HashPassword(req.AdminPassword)
+
+	admin := &users.User{
+		CoachingID: &coaching.ID,
+		Name: req.AdminName,
+		Email: req.AdminEmail,
+		Password: hashPassword,
+		Role: users.RoleSuperAdmin,
+		Status: users.StatusActive,
+	}
 
 	// Create the coaching.
-	if err := s.repository.Create(ctx, coaching); err != nil {
+	if err := s.repository.Create(ctx, coaching, admin); err != nil {
 		return nil, err
 	}
 
+
 	// Convert entity to response DTO.
-	response := ToCoachingResponse(coaching)
+	response := ToCoachingResponse(coaching, admin)
+
 
 	return response, nil
 }
@@ -79,7 +92,7 @@ func (s *service) GetById(ctx context.Context,id uint) (*dto.CoachingResponse, e
 		return nil, err
 	}
 
-	response := ToCoachingResponse(caching)
+	response := ToCoachingResponse(caching, nil)
 
 	return response, nil
 }
@@ -91,7 +104,7 @@ func (s *service) GetAll(ctx context.Context,) ([]*dto.CoachingResponse, error) 
 		return nil, err
 	}
 
-	responses := ToCoachingResponses(cachings)
+	responses := ToCoachingResponses(cachings, nil)
 
 	return responses, nil
 }
@@ -113,7 +126,7 @@ func (s *service)  Update(ctx context.Context, id uint, req *dto.UpdateCoachingR
 		return nil, err
 	}
 
-	response := ToCoachingResponse(updated)
+	response := ToCoachingResponse(updated, nil)
 
 	return response,nil
 }

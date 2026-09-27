@@ -17,9 +17,9 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB, authMiddleware echo.MiddlewareFunc
 	route.GET("/coachings/:id",coachingHandler.GetById)
 	
 	protectedRoute := route.Group("", authMiddleware)
-	protectedRoute.POST("/coachings", coachingHandler.Create, auth.RequireRoles("SUPER_ADMIN"))
-	protectedRoute.DELETE("/coachings/:id",coachingHandler.Delete, auth.RequireRoles("SUPER_ADMIN"))
-	protectedRoute.PUT("/coachings/:id",coachingHandler.Update, auth.RequireRoles("ADMIN"))
+	protectedRoute.POST("/coachings", coachingHandler.Create, auth.RequireRoles("PLATFORM_ADMIN"))
+	protectedRoute.DELETE("/coachings/:id",coachingHandler.Delete, auth.RequireRoles("PLATFORM_ADMIN"))
+	protectedRoute.PUT("/coachings/:id",coachingHandler.Update, auth.RequireRoles("PLATFORM_ADMIN"))
 
 	// ------ NOTE ------
 	// protected := route.Group("")

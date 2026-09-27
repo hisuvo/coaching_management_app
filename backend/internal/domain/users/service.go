@@ -2,11 +2,11 @@ package users
 
 import (
 	"coaching_backend/internal/domain/users/dto"
+	"coaching_backend/internal/pkg/security"
 	"context"
 	"errors"
 	"strings"
 
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -45,9 +45,8 @@ func (s *service) Register(ctx context.Context, req dto.CreateUserRequest)(*dto.
 		return nil, ErrDuplicateEmail
 	}
 
-	// Hash Password
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-
+	hashPassword, err := security.HashPassword(req.Password)
+	
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +54,7 @@ func (s *service) Register(ctx context.Context, req dto.CreateUserRequest)(*dto.
 	user := &User{
 		Name:         name,
 		Email:        email,
-		PasswordHash: string(passwordHash),
+		Password: string(hashPassword),
 		Role:         RoleMember,
 		Status:       StatusActive,
 		Phone:        phone,

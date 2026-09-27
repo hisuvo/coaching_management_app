@@ -14,8 +14,6 @@ func RegisterRoute(e *echo.Echo, db *gorm.DB) {
 	users := e.Group("/api/v1")
 
 	users.POST("/auth/register",userHandler.Register)
-
 	users.GET("/users/:email", userHandler.FindByEmail)
-
 	users.GET("/users/:id", userHandler.GetByID)
 }

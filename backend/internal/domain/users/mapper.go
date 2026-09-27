@@ -21,8 +21,8 @@ func toUserResponse(user *User) *dto.UserResponse{
 func toUserResponses(users []User)[]*dto.UserResponse{
 	responses := make([]*dto.UserResponse, 0, len(users))
 
-	for i := range users {
-		responses = append(responses, toUserResponse(&users[i]))
+	for _, user := range users {
+		responses = append(responses, toUserResponse(&user))
 	} 
 
 	return responses

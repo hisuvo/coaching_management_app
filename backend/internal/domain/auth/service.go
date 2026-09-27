@@ -3,6 +3,7 @@ package auth
 import (
 	"coaching_backend/internal/domain/auth/dto"
 	"coaching_backend/internal/domain/users"
+	"coaching_backend/internal/pkg/security"
 	"context"
 	"errors"
 	"strings"
@@ -52,7 +53,7 @@ func (s *service) Login(ctx context.Context, req *dto.LoginRequest,userAgent str
 		return nil, errors.New("user account is not active")
 	}
 
-	if err := ComparePassword(user.PasswordHash, req.Password); err != nil {
+	if err := security.CheckPassword(user.Password, req.Password); err != nil {
 		return nil, errors.New("Password does NOT match")
 	}
 
