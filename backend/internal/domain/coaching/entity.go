@@ -7,9 +7,9 @@ import (
 type CoachingStatus string
 
 const (
-	StatusActive   CoachingStatus = "active"
-	StatusInactive CoachingStatus = "inactive"
-	StatusSuspended CoachingStatus = "suspended"
+	StatusActive   CoachingStatus = "ACTIVE"
+	StatusInactive CoachingStatus = "INACTIVE"
+	StatusSuspended CoachingStatus = "SUSPENDED"
 )
 
 type Coaching struct {
@@ -23,5 +23,5 @@ type Coaching struct {
 	LogoURL  string `gorm:"type:text"`
 	Address  string `gorm:"type:text"`
 	TimeZone string `gorm:"type:varchar(50);not null;default:'Asia/Dhaka'"`
-	Status   CoachingStatus `gorm:"type:varchar(20);not null;default:'active';check:status IN ('active','inactive','suspended')"`
+	Status   CoachingStatus `gorm:"type:varchar(20);not null;default:'ACTIVE';check:status IN ('ACTIVE','INACTIVE','SUSPENDED')"`
 }

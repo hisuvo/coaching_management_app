@@ -2,7 +2,9 @@ package subjects
 
 import (
 	"coaching_backend/internal/apperror"
+	"coaching_backend/internal/domain/auth"
 	"coaching_backend/internal/domain/subjects/dto"
+	"coaching_backend/internal/httpresponse"
 	"errors"
 	"fmt"
 	"net/http"
@@ -23,22 +25,31 @@ func NewHandler(service Service) *handler {
 // POST /api/v1/subjects
 // Access: Authencated users (amdin, teacher, manager)
 func (h *handler) CreateSubject(c *echo.Context) error {
+
+	coachingID, ok := c.Get(auth.ContextCoachingID).(*uint)
+	
+	if !ok || coachingID == nil {
+		return httpresponse.Error(c, http.StatusUnauthorized, "coaching id not found", nil)
+	}
+
 	var req dto.CreateSubjectRequest
 
+	req.CoachingID = *coachingID
+
 	if err := c.Bind(&req); err != nil {
-		return err
+		return httpresponse.Error(c, http.StatusBadRequest,"invalied subject request", err.Error())
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return err
+		return httpresponse.Error(c, http.StatusBadRequest,"validation  subject request", err.Error())
 	}
 
-	response, err := h.service.CreateSubject(&req)
+	response, err := h.service.CreateSubject(c.Request().Context(), &req)
 
 	if err != nil {
-		return err
+		return httpresponse.Error(c, http.StatusBadRequest,"subject created failed", err.Error())
 	}
-	return c.JSON(http.StatusCreated, response)
+	return httpresponse.OK(c,"subject created successfully", response)
 }
 
 // GET /api/v1/subjects
@@ -55,10 +66,10 @@ func (h *handler) GetAll(c *echo.Context) error {
 
 // GET /api/v1/:subjectId
 // Accesss: only authenticate users
-func (h *handler) FindById(c *echo.Context) error {
+func (h *handler) GetById(c *echo.Context) error {
 	id := c.Param("subjectId")
 	
-	res, err := h.service.FindById(id)
+	res, err := h.service.GetById(id)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest,apperror.NotFound("subjects Id is not found"))

@@ -1,9 +1,12 @@
 package branches
 
-import "coaching_backend/internal/domain/branches/dto"
+import (
+	"coaching_backend/internal/domain/branches/dto"
+	"coaching_backend/internal/domain/users"
+)
 
-func ToBranchResponse(branch *Branch) *dto.BranchResponse {
-	return &dto.BranchResponse{
+func ToBranchResponse(branch *Branch, admin *users.User) *dto.BranchResponse {
+	response := &dto.BranchResponse{
 		ID:         branch.ID,
 		CoachingID: branch.CoachingID,
 		Name:       branch.Name,
@@ -15,13 +18,25 @@ func ToBranchResponse(branch *Branch) *dto.BranchResponse {
 		CreatedAt:  branch.CreatedAt,
 		UpdatedAt:  branch.UpdatedAt,
 	}
+
+	if admin != nil {
+		response.Admin = &dto.AdminResponse{
+			ID: admin.ID,
+			Name: admin.Name,
+			Email: admin.Email,
+			Role: string(admin.Role),
+		}
+	}
+
+	return response
 }
 
-func ToBranchResponses(branches []*Branch) []*dto.BranchResponse {
+func ToBranchResponses(branches []*Branch, admins map[uint]*users.User) []*dto.BranchResponse {
 	responses := make([]*dto.BranchResponse, 0, len(branches))
 
 	for _, branch := range branches {
-		responses = append(responses, ToBranchResponse(branch))
+		admin := admins[branch.ID]
+		responses = append(responses, ToBranchResponse(branch, admin))
 	}
 
 	return responses

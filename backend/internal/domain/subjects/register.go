@@ -2,6 +2,7 @@ package subjects
 
 import (
 	"coaching_backend/internal/domain/auth"
+	coachingsubject "coaching_backend/internal/domain/coachingSubject"
 
 	"github.com/labstack/echo/v5"
 	"gorm.io/gorm"
@@ -9,21 +10,14 @@ import (
 
 func RegisterRoute(api *echo.Group, db *gorm.DB, authMiddleware echo.MiddlewareFunc) {
 	subjectRepo := NewRepository(db)
-	subjectService := NewService(subjectRepo)
+	coaching_subject_repo := coachingsubject.NewRepository(db)
+	subjectService := NewService(subjectRepo, coaching_subject_repo)
 	subjectHandler := NewHandler(subjectService)
 
-	subjects := api.Group("/subject")
-	subjects.Use(authMiddleware)
-
-
-	subjects.POST("", subjectHandler.CreateSubject)
-	subjects.GET("", subjectHandler.GetAll)
-
-	// member := subjects.Group("")
-	// member.Use(auth.RequireRoles("MEMBER","STUDENT"))
-	subjects.GET("/:subjectId", subjectHandler.FindById, auth.RequireRoles("STUDENT"))
-	
-	subjects.GET("/query", subjectHandler.CheckQuery)
-	subjects.PUT("/:subjectId", subjectHandler.UpdateSubject)
-	subjects.DELETE("/:subjectId", subjectHandler.DeleteSubject)
+	api.POST("/subjects", subjectHandler.CreateSubject, authMiddleware, auth.RequireRoles("SUPER_ADMIN"))
+	api.GET("/subjects", subjectHandler.GetAll)
+	api.GET("/subjects/query", subjectHandler.CheckQuery)
+	api.GET("/subjects/:subjectId", subjectHandler.GetById, authMiddleware, auth.RequireRoles("SUPER_ADMIN","BRANCH_ADMIN","STUDENT"))
+	api.PUT("/subjects/:subjectId", subjectHandler.UpdateSubject, authMiddleware, auth.RequireRoles("SUPER_ADMIN"))
+	api.DELETE("/subjects/:subjectId", subjectHandler.DeleteSubject, authMiddleware, auth.RequireRoles("SUPER_ADMIN"))
 }

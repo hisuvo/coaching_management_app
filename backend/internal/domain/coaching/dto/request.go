@@ -21,4 +21,8 @@ type UpdateCoachingRequest struct {
 	Address  *string `json:"address,omitempty"`
 	TimeZone *string `json:"time_zone,omitempty"`
 	Status   *string `json:"status,omitempty"`
+
+	AdminName     string `josn:"admin_name" validate:"omitempty"`
+	AdminEmain    string `json:"admin_email" validate:"omitempty, email, max=150"`
+	AdminPassword string `json:"admin_password" validate:"omitempty,min=8"`
 }

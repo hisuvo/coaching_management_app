@@ -6,7 +6,7 @@ import (
 )
 
 func ToCoachingResponse(coaching *Coaching, admin *users.User) *dto.CoachingResponse{
-	return &dto.CoachingResponse{
+	response := &dto.CoachingResponse{
 		ID: coaching.ID,
 		Name: coaching.Name,
 		Email: coaching.Email,
@@ -17,16 +17,23 @@ func ToCoachingResponse(coaching *Coaching, admin *users.User) *dto.CoachingResp
 		Address: coaching.Address,
 		TimeZone: coaching.TimeZone,
 		Status: string(coaching.Status),
-		Admin: dto.AdminResponse{
-			ID:    admin.ID,
-			Name:  admin.Name,
-			Email: admin.Email,
-			Role:  string(admin.Role),
-		},
+		CreatedAt: coaching.CreatedAt,
+		UpdatedAt: coaching.UpdatedAt,
 	}
+
+	if admin != nil {
+		response.Admin = &dto.AdminResponse{
+			ID: admin.ID,
+			Name: admin.Name,
+			Email: admin.Email,
+			Role: string(admin.Role),
+		}
+	}
+
+	return response
 }
 
-func ToCoachingResponses(coachings []*Coaching, admins map[uint]*users.User,) []*dto.CoachingResponse {
+func ToCoachingResponses(coachings []*Coaching, admins map[uint]*users.User) []*dto.CoachingResponse {
 	responses := make([]*dto.CoachingResponse,0,len(coachings))
 
 	for _, coaching := range coachings{

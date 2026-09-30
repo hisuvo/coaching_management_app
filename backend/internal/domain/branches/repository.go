@@ -1,6 +1,7 @@
 package branches
 
 import (
+	"coaching_backend/internal/domain/users"
 	"context"
 	"errors"
 	"strings"
@@ -19,7 +20,7 @@ var (
 )
 
 type Repository interface {
-	Create(ctx context.Context, branch *Branch) (*Branch, error)
+	Create(ctx context.Context, branch *Branch, admin *users.User) error
 	FindByID(ctx context.Context, id uint) (*Branch, error)
 	FindByCode(ctx context.Context, coachingID uint, code string) (*Branch, error)
 	FindAllByCoachingID(ctx context.Context, coachingID uint) ([]*Branch, error)
@@ -38,16 +39,20 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, branch *Branch) (*Branch, error) {
+func (r *repository) Create(ctx context.Context, branch *Branch, admin *users.User) error {
 
-	if err := r.db.WithContext(ctx).Create(&branch).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey){
-			return nil, ErrBranchAlreadyExists
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&branch).Error; err != nil {
+			return  err
 		}
-		return nil, ErrBranchCreationFailed
-	}
 
-	return branch, nil
+		if err := tx.Create(&admin).Error; err != nil {
+			return  err
+		}
+
+		return nil
+	})
+
 }
 
 func (r *repository) FindByID(ctx context.Context, id uint) (*Branch, error) {

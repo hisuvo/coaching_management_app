@@ -11,7 +11,7 @@ type UserRole string
 const (
 	RolePlatformAdmin UserRole = "PLATFORM_ADMIN"
 	RoleSuperAdmin UserRole = "SUPER_ADMIN"
-	RoleAdmin      UserRole = "ADMIN"
+	RoleBranchAdmin  UserRole = "BRANCH_ADMIN"
 	RoleTeacher    UserRole = "TEACHER"
 	RoleStudent    UserRole = "STUDENT"
 	RoleMember    	UserRole = "MEMBER"

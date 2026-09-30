@@ -2,24 +2,31 @@ package coaching
 
 import (
 	"coaching_backend/internal/domain/auth"
+	"fmt"
 
 	"github.com/labstack/echo/v5"
 	"gorm.io/gorm"
 )
 
-func RegisterRoute(e *echo.Echo, db *gorm.DB, authMiddleware echo.MiddlewareFunc){
+func RegisterRoute(api *echo.Group, db *gorm.DB, authMiddleware echo.MiddlewareFunc){
 	coachingRepo := NewRepository(db)
 	coachingService := NewService(coachingRepo)
 	coachingHandler := NewHandler(coachingService)
 
-	route := e.Group("/api/v1")
-	route.GET("/coachings", coachingHandler.GetAll)
-	route.GET("/coachings/:id",coachingHandler.GetById)
-	
-	protectedRoute := route.Group("", authMiddleware)
-	protectedRoute.POST("/coachings", coachingHandler.Create, auth.RequireRoles("PLATFORM_ADMIN"))
-	protectedRoute.DELETE("/coachings/:id",coachingHandler.Delete, auth.RequireRoles("PLATFORM_ADMIN"))
-	protectedRoute.PUT("/coachings/:id",coachingHandler.Update, auth.RequireRoles("PLATFORM_ADMIN"))
+
+	api.GET("/coachings", coachingHandler.GetAll)
+	api.GET("/coachings/:id",coachingHandler.GetById)
+	api.GET("/coaching/:id/admin",func(c *echo.Context) error {
+		fmt.Println("coaching admin info")
+		return nil
+	})
+	api.GET("/coaching/:id/details",func(c *echo.Context) error {
+		fmt.Println("coaching details")
+		return nil
+	})
+	api.POST("/coachings", coachingHandler.Create, authMiddleware, auth.RequireRoles("PLATFORM_ADMIN"))
+	api.DELETE("/coachings/:id",coachingHandler.Delete, authMiddleware, auth.RequireRoles("PLATFORM_ADMIN"))
+	api.PUT("/coachings/:id",coachingHandler.Update, authMiddleware, auth.RequireRoles("PLATFORM_ADMIN"))
 
 	// ------ NOTE ------
 	// protected := route.Group("")

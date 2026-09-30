@@ -8,6 +8,10 @@ type CreateBranchRequest struct {
 	Email      string `json:"email" validate:"omitempty,email,max=150"`
 	Address    string `json:"address" validate:"omitempty,max=500"`
 	Status     string `json:"status" validate:"omitempty,oneof=ACTIVE INACTIVE"`
+
+	AdminName     string `json:"admin_name" validate:"required"`
+	AdminEmail    string `json:"admin_email" validate:"required,email,max=150"`
+	AdminPassword string `json:"admin_password" validate:"required,min=8"`
 }
 
 type UpdateBranchRequest struct {
@@ -17,4 +21,8 @@ type UpdateBranchRequest struct {
 	Email   *string `json:"email" validate:"omitempty,email,max=150"`
 	Address *string `json:"address" validate:"omitempty,max=500"`
 	Status  *string `json:"status" validate:"omitempty,oneof=ACTIVE INACTIVE"`
+
+	AdminName     string `josn:"admin_name" validate:"omitempty"`
+	AdminEmail    string `json:"admin_email" validate:"omitempty,email,max=150"`
+	AdminPassword string `json:"admin_password" validate:"omitempty,min=8"`
 }

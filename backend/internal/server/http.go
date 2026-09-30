@@ -6,6 +6,7 @@ import (
 	"coaching_backend/internal/domain/auth"
 	"coaching_backend/internal/domain/branches"
 	"coaching_backend/internal/domain/coaching"
+	coachingsubject "coaching_backend/internal/domain/coachingSubject"
 	"coaching_backend/internal/domain/students"
 	"coaching_backend/internal/domain/subjects"
 	"coaching_backend/internal/domain/submissions"
@@ -70,10 +71,11 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 
 	// all route
 	auth.RegisterRoutes(e, db, cnfg)
-	coaching.RegisterRoute(e, db, authMiddleware)
+	coaching.RegisterRoute(api, db, authMiddleware)
 	branches.RegisterRoute(api, db, authMiddleware)
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(api, db, authMiddleware)
+	coachingsubject.RegisterRoute(api, db)
 	students.RegisterRoute(e, db)
 	submissions.RegisterRoute(e, db)
 	assignments.RegisterRoute(e, db)

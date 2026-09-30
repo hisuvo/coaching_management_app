@@ -2,6 +2,8 @@ package branches
 
 import (
 	"coaching_backend/internal/domain/branches/dto"
+	"coaching_backend/internal/domain/users"
+	"coaching_backend/internal/pkg/security"
 	"context"
 	"strings"
 
@@ -54,14 +56,25 @@ func (s *service) Create(ctx context.Context, req *dto.CreateBranchRequest) (*dt
 		Status:  BranchStatus(status),
 	}
 
+	hashPassword, err := security.HashPassword(req.AdminPassword)
+
+	admin := &users.User{
+		CoachingID: &req.CoachingID,
+		BranchID: &branch.ID,
+		Name: req.AdminName,
+		Email: req.AdminEmail,
+		Password: hashPassword,
+		Role: users.RoleBranchAdmin,
+		Status: users.StatusActive,
+	}
+
 	// Save the branch
-	newBranch, err := s.repository.Create(ctx, branch)
-	if err != nil {
+	if err := s.repository.Create(ctx, branch, admin); err != nil {
 		return nil, err
 	}
 
 	// Map the branch to the response DTO
-	return ToBranchResponse(newBranch), nil
+	return ToBranchResponse(branch, admin), nil
 
 }
 
@@ -70,7 +83,7 @@ func (s *service) FindByID(ctx context.Context, id uint) (*dto.BranchResponse, e
 	if err != nil {
 		return nil, err
 	}
-	return ToBranchResponse(branch), nil
+	return ToBranchResponse(branch, nil), nil
 }
 
 func (s *service) Update(ctx context.Context, id uint, req *dto.UpdateBranchRequest) (*dto.BranchResponse, error) {
@@ -85,7 +98,7 @@ func (s *service) Update(ctx context.Context, id uint, req *dto.UpdateBranchRequ
 	if err != nil {
 		return nil, err
 	}
-	return ToBranchResponse(branch), nil
+	return ToBranchResponse(branch, nil), nil
 }
 
 func (s *service) Delete(ctx context.Context, id uint) (*dto.BranchResponse, error) {
@@ -95,7 +108,7 @@ func (s *service) Delete(ctx context.Context, id uint) (*dto.BranchResponse, err
 		return nil, err
 	}
 	
-	return ToBranchResponse(branch), nil
+	return ToBranchResponse(branch, nil), nil
 }
 
 func (s *service) FindAll(ctx context.Context) ([]*dto.BranchResponse, error) {
@@ -103,6 +116,6 @@ func (s *service) FindAll(ctx context.Context) ([]*dto.BranchResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := ToBranchResponses(branches)
+	response := ToBranchResponses(branches, nil)
 	return response, nil
 }
