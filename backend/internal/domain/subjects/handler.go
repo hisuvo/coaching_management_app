@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v5"
 )
@@ -68,8 +69,9 @@ func (h *handler) GetAll(c *echo.Context) error {
 // Accesss: only authenticate users
 func (h *handler) GetById(c *echo.Context) error {
 	id := c.Param("subjectId")
-	
-	res, err := h.service.GetById(id)
+	subject_id, err := strconv.ParseUint(id,10, 64)
+
+	res, err := h.service.GetById(c.Request().Context(), uint(subject_id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest,apperror.NotFound("subjects Id is not found"))

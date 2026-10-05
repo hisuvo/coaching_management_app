@@ -1,6 +1,8 @@
 package coachingsubject
 
 import (
+	"coaching_backend/internal/domain/subjects"
+
 	"gorm.io/gorm"
 )
 
@@ -18,4 +20,6 @@ type CoachingSubject struct {
 	SubjectID  uint `gorm:"not null;index"`
 
 	Status string `gorm:"type:varchar(20);not null;default:'ACTIVE';index"`
+
+	Subject subjects.Subject `gorm:"foreignKey:SubjectID"`
 }

@@ -75,7 +75,7 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 	branches.RegisterRoute(api, db, authMiddleware)
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(api, db, authMiddleware)
-	coachingsubject.RegisterRoute(api, db)
+	coachingsubject.RegisterRoute(api, db, authMiddleware)
 	students.RegisterRoute(e, db)
 	submissions.RegisterRoute(e, db)
 	assignments.RegisterRoute(e, db)

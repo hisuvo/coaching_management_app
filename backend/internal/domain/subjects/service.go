@@ -1,7 +1,6 @@
 package subjects
 
 import (
-	coachingsubject "coaching_backend/internal/domain/coachingSubject"
 	"coaching_backend/internal/domain/subjects/dto"
 	"context"
 	"errors"
@@ -10,28 +9,26 @@ import (
 type Service interface {
 	CreateSubject(ctx context.Context, req *dto.CreateSubjectRequest) (*dto.SubjectResponse, error)
 	GetAll()([]*dto.SubjectResponse, error)
-	GetById (subjectId string) (*dto.SubjectResponse, error)
-	Update(subjectId string, req *dto.UpdateSubjectRequest) (*dto.SubjectResponse, error)
+	GetById(ctx context.Context, subjectId uint)(*dto.SubjectResponse, error)
+	Update(subjectId string, req *dto.UpdateSubjectRequest)(*dto.SubjectResponse, error)
 	Delete(subjectId string) (*dto.SubjectResponse, error)
 }
 
 type service struct{
 	// db  *gorm.DB
 	repository Repoistory
-	coaching_subject_repository coachingsubject.Repository
 }
 
-func NewService(repository Repoistory,coaching_subject_repository coachingsubject.Repository) Service{
+func NewService(repository Repoistory) Service{
 	return &service{
 		repository: repository,
-		coaching_subject_repository: coaching_subject_repository,
 	}
 }
 
 func (s *service) CreateSubject(ctx context.Context, req *dto.CreateSubjectRequest) (*dto.SubjectResponse, error){
 	var subject *Subject
 	
-	// If subject does not exists, create it
+	// Check subject already exists in database
 	existingSubject, err := s.repository.FindByCode(ctx, req.Code)
 
 	if err == nil {
@@ -54,17 +51,6 @@ func (s *service) CreateSubject(ctx context.Context, req *dto.CreateSubjectReque
 		return nil, err
 	}
 
-	// Subject now definitely exists.
-	// Create the relationship between Coaching and Subject.
-	coachingSubject := &coachingsubject.CoachingSubject{
-		CoachingID: req.CoachingID,
-		SubjectID:  subject.ID,
-		Status:     "active",
-	}
-
-	if err := s.coaching_subject_repository.Create(ctx, coachingSubject); err != nil {
-		return nil, err
-	}
 
 	return ToSubjectResponse(subject), nil
 }
@@ -81,8 +67,8 @@ func (s *service) GetAll() ([]*dto.SubjectResponse, error) {
 	return response, nil
 }
 
-func (s *service) GetById(subjectId string) (*dto.SubjectResponse, error) {
-	subject, err := s.repository.GetById(subjectId)
+func (s *service) GetById(ctx context.Context, subjectId uint)(*dto.SubjectResponse, error) {
+	subject, err := s.repository.GetById(ctx, subjectId)
 
 	if err != nil {
 		return nil, err

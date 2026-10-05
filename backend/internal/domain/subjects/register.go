@@ -2,7 +2,6 @@ package subjects
 
 import (
 	"coaching_backend/internal/domain/auth"
-	coachingsubject "coaching_backend/internal/domain/coachingSubject"
 
 	"github.com/labstack/echo/v5"
 	"gorm.io/gorm"
@@ -10,8 +9,7 @@ import (
 
 func RegisterRoute(api *echo.Group, db *gorm.DB, authMiddleware echo.MiddlewareFunc) {
 	subjectRepo := NewRepository(db)
-	coaching_subject_repo := coachingsubject.NewRepository(db)
-	subjectService := NewService(subjectRepo, coaching_subject_repo)
+	subjectService := NewService(subjectRepo)
 	subjectHandler := NewHandler(subjectService)
 
 	api.POST("/subjects", subjectHandler.CreateSubject, authMiddleware, auth.RequireRoles("SUPER_ADMIN"))

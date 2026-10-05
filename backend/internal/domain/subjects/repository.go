@@ -15,7 +15,7 @@ var (
 type Repoistory interface{
 	Create(ctx context.Context, subject *Subject) error
 	GetAll() ([]*Subject, error)
-	GetById(subjectId string)(*Subject, error)
+	GetById(ctx context.Context, subjectId uint)(*Subject, error)
 	FindByCode(ctx context.Context, code string) (*Subject, error)
 	Update(subjectId string, subject *Subject) (*Subject, error)
 	Delete(subjectId string) (*Subject, error)
@@ -47,10 +47,10 @@ func (r *repository) GetAll()([]*Subject, error) {
 	return response, nil
 }
 
-func (r *repository) GetById(subjectId string)(*Subject, error){
+func (r *repository) GetById(ctx context.Context, subjectId uint)(*Subject, error){
 	var subject *Subject
 
-	err := r.db.Where("id = ?", subjectId).First(&subject).Error
+	err := r.db.WithContext(ctx).Where("id = ?", subjectId).First(&subject).Error
 
 	if err != nil {
 		return nil, err
