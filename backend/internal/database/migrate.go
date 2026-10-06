@@ -9,6 +9,7 @@ import (
 	"coaching_backend/internal/domain/students"
 	"coaching_backend/internal/domain/subjects"
 	"coaching_backend/internal/domain/submissions"
+	"coaching_backend/internal/domain/teachers"
 	"coaching_backend/internal/domain/users"
 
 	"gorm.io/gorm"
@@ -21,6 +22,8 @@ func Migrate(db *gorm.DB) {
 		&coaching.Coaching{},
 		&branches.Branch{},
 		&subjects.Subject{},
+		&teachers.Teacher{},
+		&teachers.TeacherSubject{},
 		&coachingsubject.CoachingSubject{},
 		&students.Student{},
 		&submissions.Submission{},

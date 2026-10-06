@@ -10,6 +10,7 @@ import (
 	"coaching_backend/internal/domain/students"
 	"coaching_backend/internal/domain/subjects"
 	"coaching_backend/internal/domain/submissions"
+	"coaching_backend/internal/domain/teachers"
 	"coaching_backend/internal/domain/users"
 	"context"
 
@@ -75,6 +76,7 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 	branches.RegisterRoute(api, db, authMiddleware)
 	users.RegisterRoute(e, db)
 	subjects.RegisterRoute(api, db, authMiddleware)
+	teachers.RegisterRoute(api, db, authMiddleware)
 	coachingsubject.RegisterRoute(api, db, authMiddleware)
 	students.RegisterRoute(e, db)
 	submissions.RegisterRoute(e, db)

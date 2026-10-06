@@ -1,34 +1,40 @@
 package teachers
 
 import (
+	"coaching_backend/internal/domain/subjects"
+	"time"
+
 	"gorm.io/gorm"
+)
+
+type TeacherStatus string
+
+const (
+	TeacherStatusActive TeacherStatus = "ACTIVE"
+	TeacherStatusInactive TeacherStatus = "INACTIVE"
 )
 
 type Teacher struct {
 	gorm.Model
 
-	CoachingID uint `json:"coaching_id" gorm:"not null;index"`
+	CoachingID uint `gorm:"not null;index"`
+	UserID     uint `gorm:"not null;index"`
+	BranchID   uint `gorm:"not null;index"`
 
-	Name        string `json:"name" gorm:"type:varchar(100);not null"`
-	Email       string `json:"email" gorm:"type:varchar(150);not null"`
-	Phone       string `json:"phone" gorm:"type:varchar(20);not null"`
-	Password    string `json:"-" gorm:"type:varchar(255);not null"`
-	Subject     string `json:"subject" gorm:"type:varchar(100);not null"`
-	Designation string `json:"designation" gorm:"type:varchar(100)"`
-	Address     string `json:"address" gorm:"type:text"`
-	IsActive    bool   `json:"is_active" gorm:"default:true"`
+	EmployeeNo    string       `gorm:"type:varchar(50);not null;uniqueIndex"`
+	Designation   string       `gorm:"type:varchar(150)"`
+	Qualification string       `gorm:"type:varchar(500);not null"`
+	JoiningDate   time.Time    `gorm:"not null"`
+	Status        TeacherStatus `gorm:"type:varchar(20);not null;default:'ACTIVE';check:status IN ('ACTIVE','INACTIVE')"`
 }
 
-/*
-{
-  "coaching_id": 1,
-  "name": "Rahim Ahmed",
-  "email": "rahim.ahmed@example.com",
-  "phone": "01712345678",
-  "password": "12345678",
-  "subject": "Mathematics",
-  "designation": "Senior Teacher",
-  "address": "Dhaka, Bangladesh",
-  "is_active": true
+type TeacherSubject struct {
+	gorm.Model
+
+	TeacherID uint `gorm:"not null;index;uniqueIndex:idx_teacher_subject"`
+	SubjectID uint `gorm:"not null;index;uniqueIndex:idx_teacher_subject"`
+
+	// Relationships
+	Teacher *Teacher `gorm:"foreignKey:TeacherID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Subject *subjects.Subject `gorm:"foreignKey:SubjectID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
-*/

@@ -1,24 +1,36 @@
 package dto
 
+import (
+	// "coaching_backend/internal/domain/teachers"
+	"time"
+)
+
+// CreateTeacherRequest represents the payload required to create a teacher.
 type CreateTeacherRequest struct {
-	CoachingID  uint   `json:"coaching_id" validate:"required,gt=0"`
-	Name        string `json:"name" validate:"required,min=2,max=100"`
-	Email       string `json:"email" validate:"required,email"`
-	Phone       string `json:"phone" validate:"required,min=11,max=20"`
-	Password    string `json:"password" validate:"required,min=6"`
-	Subject     string `json:"subject" validate:"required,max=100"`
-	Designation string `json:"designation" validate:"omitempty,max=100"`
-	Address     string `json:"address" validate:"omitempty,max=255"`
-	IsActive    *bool  `json:"is_active"`
+	UserID        uint         				`json:"user_id" validate:"required"`
+	BranchID      uint         				`json:"branch_id" validate:"required"`
+	EmployeeNo    string       				`json:"employee_no" validate:"required,max=50"`
+	Designation   string       				`json:"designation,omitempty" validate:"max=150"`
+	Qualification string       				`json:"qualification" validate:"required,max=500"`
+	JoiningDate   time.Time    				`json:"joining_date" validate:"required"`
+	Status        string	`json:"status,omitempty"`
 }
 
+// UpdateTeacherRequest represents the fields that can be updated.
 type UpdateTeacherRequest struct {
-	Name        string `json:"name" validate:"omitempty,min=2,max=100"`
-	Email       string `json:"email" validate:"omitempty,email"`
-	Phone       string `json:"phone" validate:"omitempty,min=11,max=20"`
-	Password    string `json:"password" validate:"omitempty,min=6"`
-	Subject     string `json:"subject" validate:"omitempty,max=100"`
-	Designation string `json:"designation" validate:"omitempty,max=100"`
-	Address     string `json:"address" validate:"omitempty,max=255"`
-	IsActive    *bool  `json:"is_active"`
+	BranchID      *uint         			`json:"branch_id,omitempty"`
+	Designation   *string       			`json:"designation,omitempty" validate:"omitempty,max=150"`
+	Qualification *string       			`json:"qualification,omitempty" validate:"omitempty,max=500"`
+	JoiningDate   *time.Time    			`json:"joining_date,omitempty"`
+	Status        *string	`json:"status,omitempty"`
+}
+
+type CreateTeacherSubjectRequest struct {
+	TeacherID uint `json:"teacher_id" validate:"required"`
+	SubjectID uint `json:"subject_id" validate:"required"`
+}
+
+type UpdateTeacherSubjectRequest struct {
+	TeacherID uint `json:"teacher_id" validate:"required"`
+	SubjectID uint `json:"subject_id" validate:"required"`
 }
