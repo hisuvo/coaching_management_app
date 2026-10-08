@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -52,7 +53,7 @@ func (s *service) Create(ctx context.Context,coachingID uint,req *dto.CreateTeac
 		EmployeeNo:    employeeNo,
 		Designation:   strings.TrimSpace(req.Designation),
 		Qualification: strings.TrimSpace(req.Qualification),
-		JoiningDate:   req.JoiningDate,
+		JoiningDate:   time.Now(),
 		Status:        TeacherStatus(req.Status),
 	}
 

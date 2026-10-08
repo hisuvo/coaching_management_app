@@ -5,19 +5,16 @@ import (
 )
 
 type BranchResponse struct {
-	ID uint `json:"id"`
-	CoachingID uint `json:"coaching_id"`
+	ID uint `json:"id,omitempty"`
+	CoachingID uint `json:"coaching_id,omitempty"`
 	Name string `json:"name"`
 	Code string `json:"code"`
 	Phone string `json:"phone"`
 	Email string `json:"email"`
-	Address string `json:"address"`
+	Address string `json:"address,omitempty"`
 	Status string `json:"status"`
 
 	Admin *AdminResponse `json:"amdin,omitempty"`
-	
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type BranchDetailsResponse struct {

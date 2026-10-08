@@ -12,7 +12,7 @@ type CreateTeacherRequest struct {
 	EmployeeNo    string       				`json:"employee_no" validate:"required,max=50"`
 	Designation   string       				`json:"designation,omitempty" validate:"max=150"`
 	Qualification string       				`json:"qualification" validate:"required,max=500"`
-	JoiningDate   time.Time    				`json:"joining_date" validate:"required"`
+	JoiningDate   time.Time    				`json:"joining_date"`
 	Status        string	`json:"status,omitempty"`
 }
 
@@ -22,7 +22,7 @@ type UpdateTeacherRequest struct {
 	Designation   *string       			`json:"designation,omitempty" validate:"omitempty,max=150"`
 	Qualification *string       			`json:"qualification,omitempty" validate:"omitempty,max=500"`
 	JoiningDate   *time.Time    			`json:"joining_date,omitempty"`
-	Status        *string	`json:"status,omitempty"`
+	Status        *string					`json:"status,omitempty"`
 }
 
 type CreateTeacherSubjectRequest struct {

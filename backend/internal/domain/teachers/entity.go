@@ -1,7 +1,10 @@
 package teachers
 
 import (
+	"coaching_backend/internal/domain/branches"
+	"coaching_backend/internal/domain/coaching"
 	"coaching_backend/internal/domain/subjects"
+	"coaching_backend/internal/domain/users"
 	"time"
 
 	"gorm.io/gorm"
@@ -26,6 +29,11 @@ type Teacher struct {
 	Qualification string       `gorm:"type:varchar(500);not null"`
 	JoiningDate   time.Time    `gorm:"not null"`
 	Status        TeacherStatus `gorm:"type:varchar(20);not null;default:'ACTIVE';check:status IN ('ACTIVE','INACTIVE')"`
+	
+	// Relationships
+	User *users.User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Coaching *coaching.Coaching `gorm:"forignKey:CoachingID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Branch *branches.Branch `gorm:"forignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type TeacherSubject struct {

@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func RegisterRoutes(e *echo.Echo, db *gorm.DB, config *config.Config) {
+func RegisterRoute(e *echo.Echo, db *gorm.DB, config *config.Config) {
 	userRepo := users.NewRepository(db)
 	authRepo := NewRepository(db)
 	tokenManager := NewTokenManager(

@@ -60,10 +60,14 @@ func (r *repository) GetAll(ctx context.Context,coachingID uint) ([]*Teacher, er
 
 	var teachers []*Teacher
 
-	err := r.db.WithContext(ctx).Where("coaching_id = ?", coachingID).Find(&teachers).Error
+	err := r.db.WithContext(ctx).Preload("User").Preload("Branch").Where("coaching_id = ?", coachingID).Find(&teachers).Error
 
 	if err != nil {
 		return nil, err
+	}
+
+	if len(teachers) == 0 {
+		return nil, ErrTeacherNotFound
 	}
 
 	return teachers, nil
@@ -105,9 +109,12 @@ func (r *repository) FindByEmployeeNo(ctx context.Context,coachingID uint,employ
 
 	var teacher Teacher
 
-	err := r.db.WithContext(ctx).Where("coachingID = ? AND employee_no = ?",coachingID,employeeNo).First(&teacher).Error
+	err := r.db.WithContext(ctx).Where("coaching_id= ? AND employee_no = ?",coachingID,employeeNo).First(&teacher).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound){
+			return nil, ErrTeacherNotFound
+		}
 		return nil, err
 	}
 

@@ -2,16 +2,7 @@ package server
 
 import (
 	"coaching_backend/internal/config"
-	"coaching_backend/internal/domain/assignments"
-	"coaching_backend/internal/domain/auth"
-	"coaching_backend/internal/domain/branches"
-	"coaching_backend/internal/domain/coaching"
-	coachingsubject "coaching_backend/internal/domain/coachingSubject"
-	"coaching_backend/internal/domain/students"
-	"coaching_backend/internal/domain/subjects"
-	"coaching_backend/internal/domain/submissions"
-	"coaching_backend/internal/domain/teachers"
-	"coaching_backend/internal/domain/users"
+	"coaching_backend/internal/routes"
 	"context"
 
 	"github.com/go-playground/validator/v10"
@@ -52,35 +43,7 @@ func Start( db *gorm.DB, cnfg *config.Config) {
 		})
     })
 
-	userRepo := users.NewRepository(db)
-    authRepo := auth.NewRepository(db)
-
-    tokenManager := auth.NewTokenManager(
-        cnfg.JWT_ACCESS_SECRET,
-        "coaching-management-api",
-        cnfg.JWT_ACCESS_EXPIRES_IN,
-        cnfg.JWT_REFRESH_EXPIRES_IN,
-    )
-
-    authService := auth.NewService(userRepo, authRepo, tokenManager)
-    authHandler := auth.NewHandler(authService, authRepo, *cnfg, *tokenManager)
-
-	authMiddleware := authHandler.AuthMiddleware;
-
-
-	api := e.Group("/api/v1")
-
-	// all route
-	auth.RegisterRoutes(e, db, cnfg)
-	coaching.RegisterRoute(api, db, authMiddleware)
-	branches.RegisterRoute(api, db, authMiddleware)
-	users.RegisterRoute(e, db)
-	subjects.RegisterRoute(api, db, authMiddleware)
-	teachers.RegisterRoute(api, db, authMiddleware)
-	coachingsubject.RegisterRoute(api, db, authMiddleware)
-	students.RegisterRoute(e, db)
-	submissions.RegisterRoute(e, db)
-	assignments.RegisterRoute(e, db)
+	routes.RegisterRoutes(e, db, cnfg)
 
 	sc := echo.StartConfig{Address: ":" + cnfg.PORT}
 	if err := sc.Start(context.Background(), e); err != nil {

@@ -15,8 +15,6 @@ func ToBranchResponse(branch *Branch, admin *users.User) *dto.BranchResponse {
 		Email:      branch.Email,
 		Address:    branch.Address,
 		Status:     string(branch.Status),
-		CreatedAt:  branch.CreatedAt,
-		UpdatedAt:  branch.UpdatedAt,
 	}
 
 	if admin != nil {

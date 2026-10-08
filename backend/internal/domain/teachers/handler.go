@@ -1,9 +1,9 @@
 package teachers
 
 import (
-	"coaching_backend/internal/domain/auth"
 	"coaching_backend/internal/domain/teachers/dto"
 	"coaching_backend/internal/httpresponse"
+	"coaching_backend/internal/pkg/helper"
 	"errors"
 	"net/http"
 
@@ -21,80 +21,51 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) Create(c *echo.Context) error {
-	// Get coaching ID from authenticated user's context.
-	coachingIDValue := c.Get(auth.ContextCoachingID)
 
-	// Make sure coaching ID exists in context.
-	if coachingIDValue == nil {
-		return httpresponse.Error(
-			c,
-			http.StatusUnauthorized,
-			"coaching information not found",
-			nil,
-		)
-	}
+	coachingID, err := helper.GetCoachingId(c)
 
-	// Convert context value to uint.
-	coachingID, ok := coachingIDValue.(uint)
-	if !ok {
-		return httpresponse.Error(
-			c,
-			http.StatusUnauthorized,
-			"invalid coaching id",
-			nil,
-		)
+	if err != nil {
+		return nil
 	}
 
 	var req dto.CreateTeacherRequest
 
 	// Bind request body to DTO.
 	if err := c.Bind(&req); err != nil {
-		return httpresponse.Error(
-			c,
-			http.StatusBadRequest,
-			"invalid request body",
-			err.Error(),
-		)
+		return httpresponse.Error(c,http.StatusBadRequest,"invalid request body",err.Error())
 	}
 
 	// Validate request body.
 	if err := c.Validate(&req); err != nil {
-		return httpresponse.Error(
-			c,
-			http.StatusBadRequest,
-			"validation failed",
-			err.Error(),
-		)
+		return httpresponse.Error(c,http.StatusBadRequest,"validation failed",err.Error())
 	}
 
 	// Create teacher.
-	result, err := h.service.Create(
-		c.Request().Context(),
-		coachingID,
-		&req,
-	)
+	result, err := h.service.Create(c.Request().Context(), *coachingID, &req)
 
 	if err != nil {
 		if errors.Is(err, ErrEmployeeNoExists) {
-			return httpresponse.Error(
-				c,
-				http.StatusConflict,
-				"employee number already exists",
-				err.Error(),
-			)
+			return httpresponse.Error(c,http.StatusConflict,"employee number already exists",err.Error())
 		}
 
-		return httpresponse.Error(
-			c,
-			http.StatusInternalServerError,
-			"failed to create teacher",
-			err.Error(),
-		)
+		return httpresponse.Error(c,http.StatusInternalServerError,"failed to create teacher",err.Error())
 	}
 
-	return httpresponse.OK(
-		c,
-		"Teacher created successfully",
-		result,
-	)
+	return httpresponse.OK(c,"Teacher created successfully",result)
+}
+
+func (h *Handler) GetAll(c *echo.Context) error {
+	coachingId, err := helper.GetCoachingId(c)
+
+	if err != nil {
+		return err
+	}
+
+	result, err := h.service.GetAll(c.Request().Context(), *coachingId)
+
+	if err != nil {
+		return httpresponse.Error(c,http.StatusInternalServerError,"teachers retrived failed",err.Error())
+	}
+
+	return httpresponse.OK(c, "teachers retrived successfully", result)
 }
